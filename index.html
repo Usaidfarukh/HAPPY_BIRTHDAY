@@ -404,10 +404,11 @@ section { position: relative; overflow: hidden; }
   margin:0 auto 54px;
 }
 
-.swiper { max-width:900px; margin:0 auto; padding-bottom:50px !important; }
+.swiper { max-width:680px; margin:0 auto; padding-bottom:50px !important; }
 .swiper-slide {
   border-radius:20px; overflow:hidden;
   aspect-ratio:4/3;
+  max-height:380px;
   background:linear-gradient(135deg,#fce4ec,#f8bbd0,#e0c8d8);
   display:flex; align-items:center; justify-content:center;
   position:relative;
@@ -439,34 +440,93 @@ section { position: relative; overflow: hidden; }
   grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
   gap:22px; max-width:960px; margin:0 auto;
 }
+
+/* Flip card wrapper */
 .reason-card {
-  background:rgba(255,255,255,.65);
-  backdrop-filter:blur(16px) saturate(150%);
-  border:1.5px solid var(--glass-border);
-  border-radius:22px; padding:34px 26px;
-  text-align:center;
-  box-shadow:0 8px 32px rgba(233,30,140,.08);
-  transition:transform .3s, box-shadow .3s;
-  cursor:default;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  cursor: pointer;
+  perspective: 1000px;
+  height: 220px;
 }
-.reason-card:hover {
-  transform:translateY(-8px) scale(1.02);
-  box-shadow:0 20px 50px rgba(233,30,140,.18);
+.reason-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.65s cubic-bezier(.4,0,.2,1);
+  border-radius: 22px;
+}
+.reason-card.flipped .reason-card-inner {
+  transform: rotateY(180deg);
+}
+/* Front face */
+.reason-front, .reason-back {
+  position: absolute;
+  inset: 0;
+  border-radius: 22px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 22px;
+  box-shadow: 0 8px 32px rgba(233,30,140,.08);
+}
+.reason-front {
+  background: rgba(255,255,255,.65);
+  backdrop-filter: blur(16px) saturate(150%);
+  border: 1.5px solid var(--glass-border);
+}
+.reason-front:hover {
+  box-shadow: 0 20px 50px rgba(233,30,140,.18);
+}
+/* Back face */
+.reason-back {
+  background: linear-gradient(135deg, #fce4ec, #f8bbd0);
+  border: 1.5px solid rgba(233,30,140,.25);
+  transform: rotateY(180deg);
+  overflow: hidden;
+}
+.reason-back-img {
+  font-size: 72px;
+  line-height: 1;
+  margin-bottom: 10px;
+  filter: drop-shadow(0 4px 12px rgba(233,30,140,.3));
+  animation: loaderPulse 2s ease-in-out infinite;
+}
+.reason-back-label {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: 15px;
+  color: var(--text-mid);
+  letter-spacing: .5px;
 }
 .reason-icon {
   font-size:38px; margin-bottom:16px;
   display:block;
   animation:loaderPulse 2.5s ease-in-out infinite;
 }
-.reason-card h3 {
+.reason-front h3 {
   font-family:'Playfair Display',serif;
   font-size:17px; color:var(--text-dark);
   margin-bottom:10px;
 }
-.reason-card p {
+.reason-front p {
   font-family:'Cormorant Garamond',serif;
   font-style:italic; font-size:15px;
   color:var(--text-light); line-height:1.6;
+}
+.reason-tap-hint {
+  font-size: 11px;
+  color: var(--text-light);
+  letter-spacing: 1.5px;
+  margin-top: 10px;
+  opacity: 0.7;
+  font-family: 'Lato', sans-serif;
 }
 
 /* ==============================
@@ -701,6 +761,76 @@ section { position: relative; overflow: hidden; }
 }
 
 /* ==============================
+   SECTION: I LOVE YOU HEART
+   ============================== */
+#love-heart-sec {
+  padding: 90px 20px;
+  background: linear-gradient(180deg, #fff0f6, #fce4ec);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.love-heart-canvas-wrap {
+  position: relative;
+  width: 580px;
+  height: 580px;
+  max-width: 90vw;
+  max-height: 90vw;
+  margin: 40px auto 10px;
+  filter: drop-shadow(0 0 28px rgba(233,30,140,0.35));
+}
+
+#loveHeartCanvas {
+  width: 580px;
+  height: 580px;
+  max-width: 90vw;
+  max-height: 90vw;
+}
+
+/* Floating hearts inside love-heart-sec */
+#lhFloatContainer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+.lh-float-heart {
+  position: absolute;
+  bottom: -30px;
+  font-size: 14px;
+  opacity: 0;
+  pointer-events: none;
+  user-select: none;
+  animation: lhHeartRise linear infinite;
+}
+@keyframes lhHeartRise {
+  0%   { transform: translateY(0) scale(0.5) rotate(-8deg); opacity: 0; }
+  12%  { opacity: 1; transform: translateY(-60px) scale(1) rotate(4deg); }
+  80%  { opacity: 0.7; }
+  100% { transform: translateY(-420px) scale(0.4) rotate(20deg); opacity: 0; }
+}
+
+/* Small decorative hearts scattered around */
+.lh-deco-heart {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0.22;
+  font-size: 13px;
+  animation: lhDecoFloat ease-in-out infinite alternate;
+}
+@keyframes lhDecoFloat {
+  from { transform: translateY(0) scale(1); }
+  to   { transform: translateY(-10px) scale(1.12); }
+}
+
+/* ==============================
    RESPONSIVE
    ============================== */
 @media(max-width:600px){
@@ -709,7 +839,7 @@ section { position: relative; overflow: hidden; }
   .cd-box{ padding:22px 20px; min-width:80px; }
   .cd-num{ font-size:38px; }
   #nav-dots{ display:none; }
-  .reason-card{ padding:26px 18px; }
+  .reason-card{ height: 200px; }
 }
 </style>
 </head>
@@ -762,12 +892,12 @@ section { position: relative; overflow: hidden; }
   <div class="particles" id="loginParticles"></div>
   <div class="login-card" id="loginCard">
     <div class="lock-icon">🔐</div>
-    <h2>Secret Entry</h2>
+    <h2>luxury Entry</h2>
     <p>Answer the question to unlock your surprise 💕</p>
     <p style="font-size:18px;font-family:'Playfair Display',serif;color:var(--text-dark);margin-bottom:20px;font-weight:600">
       "Who is the most beautiful girl in the world?"
     </p>
-    <input class="login-input" type="text" id="loginInput" placeholder="Type her name…" onkeydown="if(event.key==='Enter')checkLogin()">
+    <input class="login-input" type="text" id="loginInput" placeholder="Enter the name your husband wrote for you." onkeydown="if(event.key==='Enter')checkLogin()">
     <button class="btn-login" onclick="checkLogin()">Unlock ✨</button>
     <div class="login-error" id="loginError"></div>
   </div>
@@ -800,47 +930,28 @@ section { position: relative; overflow: hidden; }
      SECTION 4: GALLERY
      ============================== -->
 <section id="gallery">
-  <div class="section-label">Our Beautiful Moments</div>
+  <div class="section-label">My Beautiful Begum 🌸</div>
   <h2 class="section-title" data-aos="fade-up">Memory Gallery 📸</h2>
   <div class="section-divider"></div>
 
   <div class="swiper mySwiper" data-aos="fade-up" data-aos-delay="200">
     <div class="swiper-wrapper">
       <div class="swiper-slide">
-        <div class="slide-placeholder">
-          <span class="ph-icon">🌹</span>
-          <span class="ph-text">Our First Date</span>
-          <span class="ph-sub">Add your photo here</span>
-        </div>
+      <div class="swiper-slide">
+  <img src="DMNM3859.JPG" alt="Our First Date" style="width:100%;height:100%;object-fit:cover;">
+</div>
       </div>
       <div class="swiper-slide" style="background:linear-gradient(135deg,#f0c8e0,#e0b0d0)">
-        <div class="slide-placeholder">
-          <span class="ph-icon">🌙</span>
-          <span class="ph-text">Under the Stars</span>
-          <span class="ph-sub">Add your photo here</span>
-        </div>
+       <div class="swiper-slide">
+  <img src="DMNM3859.JPG" alt="Our First Date" style="width:100%;height:100%;object-fit:cover;">
+</div>
       </div>
       <div class="swiper-slide" style="background:linear-gradient(135deg,#fdd9e8,#f4b8d0)">
-        <div class="slide-placeholder">
-          <span class="ph-icon">☕</span>
-          <span class="ph-text">Coffee & Laughs</span>
-          <span class="ph-sub">Add your photo here</span>
-        </div>
+        <div class="swiper-slide">
+  <img src="DMNM3859.JPG" alt="Our First Date" style="width:100%;height:100%;object-fit:cover;">
+</div>
       </div>
-      <div class="swiper-slide" style="background:linear-gradient(135deg,#e8d0f0,#d4b8e8)">
-        <div class="slide-placeholder">
-          <span class="ph-icon">🌸</span>
-          <span class="ph-text">Spring Together</span>
-          <span class="ph-sub">Add your photo here</span>
-        </div>
-      </div>
-      <div class="swiper-slide" style="background:linear-gradient(135deg,#fce4ec,#f48fb1)">
-        <div class="slide-placeholder">
-          <span class="ph-icon">🎭</span>
-          <span class="ph-text">Our Adventures</span>
-          <span class="ph-sub">Add your photo here</span>
-        </div>
-      </div>
+     
     </div>
     <div class="swiper-pagination"></div>
     <div class="swiper-button-next"></div>
@@ -857,35 +968,89 @@ section { position: relative; overflow: hidden; }
   <div class="section-divider"></div>
 
   <div class="reasons-grid">
-    <div class="reason-card" data-aos="zoom-in" data-aos-delay="0">
-      <span class="reason-icon">😊</span>
-      <h3>Your Smile</h3>
-      <p>Your smile brightens my darkest days and makes every moment worth living.</p>
+    <div class="reason-card" data-aos="zoom-in" data-aos-delay="0" onclick="this.classList.toggle('flipped')">
+      <div class="reason-card-inner">
+        <div class="reason-front">
+          <span class="reason-icon">😊</span>
+          <h3>Your Smile</h3>
+          <p>Your smile brightens my darkest days and makes every moment worth living.</p>
+          <span class="reason-tap-hint">TAP TO FLIP ✨</span>
+        </div>
+        <div class="reason-back">
+          <div class="reason-back-img">🌸</div>
+          <div class="reason-back-label">Your smile is my sunshine 💕</div>
+        </div>
+      </div>
     </div>
-    <div class="reason-card" data-aos="zoom-in" data-aos-delay="100">
-      <span class="reason-icon">✨</span>
-      <h3>Every Moment</h3>
-      <p>You make every ordinary moment feel like a beautiful, unforgettable memory.</p>
+    <div class="reason-card" data-aos="zoom-in" data-aos-delay="100" onclick="this.classList.toggle('flipped')">
+      <div class="reason-card-inner">
+        <div class="reason-front">
+          <span class="reason-icon">✨</span>
+          <h3>Every Moment</h3>
+          <p>You make every ordinary moment feel like a beautiful, unforgettable memory.</p>
+          <span class="reason-tap-hint">TAP TO FLIP ✨</span>
+        </div>
+        <div class="reason-back">
+          <div class="reason-back-img">💫</div>
+          <div class="reason-back-label">Every second with you is magic 🌙</div>
+        </div>
+      </div>
     </div>
-    <div class="reason-card" data-aos="zoom-in" data-aos-delay="200">
-      <span class="reason-icon">🌟</span>
-      <h3>My Favorite Person</h3>
-      <p>Out of everyone in this world, you are simply my favorite person to be with.</p>
+    <div class="reason-card" data-aos="zoom-in" data-aos-delay="200" onclick="this.classList.toggle('flipped')">
+      <div class="reason-card-inner">
+        <div class="reason-front">
+          <span class="reason-icon">🌟</span>
+          <h3>My Favorite Person</h3>
+          <p>Out of everyone in this world, you are simply my favorite person to be with.</p>
+          <span class="reason-tap-hint">TAP TO FLIP ✨</span>
+        </div>
+        <div class="reason-back">
+          <div class="reason-back-img">👑</div>
+          <div class="reason-back-label">You're my whole world 🌍</div>
+        </div>
+      </div>
     </div>
-    <div class="reason-card" data-aos="zoom-in" data-aos-delay="300">
-      <span class="reason-icon">💞</span>
-      <h3>My Happiness</h3>
-      <p>You are not just a part of my happiness — you are the reason for it.</p>
+    <div class="reason-card" data-aos="zoom-in" data-aos-delay="300" onclick="this.classList.toggle('flipped')">
+      <div class="reason-card-inner">
+        <div class="reason-front">
+          <span class="reason-icon">💞</span>
+          <h3>My Happiness</h3>
+          <p>You are not just a part of my happiness — you are the reason for it.</p>
+          <span class="reason-tap-hint">TAP TO FLIP ✨</span>
+        </div>
+        <div class="reason-back">
+          <div class="reason-back-img">🌈</div>
+          <div class="reason-back-label">You are my happy place 💗</div>
+        </div>
+      </div>
     </div>
-    <div class="reason-card" data-aos="zoom-in" data-aos-delay="400">
-      <span class="reason-icon">🌙</span>
-      <h3>My Safe Place</h3>
-      <p>In your arms I find peace, comfort, and the most beautiful kind of home.</p>
+    <div class="reason-card" data-aos="zoom-in" data-aos-delay="400" onclick="this.classList.toggle('flipped')">
+      <div class="reason-card-inner">
+        <div class="reason-front">
+          <span class="reason-icon">🌙</span>
+          <h3>My Safe Place</h3>
+          <p>In your arms I find peace, comfort, and the most beautiful kind of home.</p>
+          <span class="reason-tap-hint">TAP TO FLIP ✨</span>
+        </div>
+        <div class="reason-back">
+          <div class="reason-back-img">🏡</div>
+          <div class="reason-back-label">Home is wherever you are 🌙</div>
+        </div>
+      </div>
     </div>
-    <div class="reason-card" data-aos="zoom-in" data-aos-delay="500">
-      <span class="reason-icon">🦋</span>
-      <h3>Your Kindness</h3>
-      <p>Your gentle, loving heart inspires me to be a better person every single day.</p>
+    <div class="reason-card" data-aos="zoom-in" data-aos-delay="500" onclick="this.classList.toggle('flipped')">
+      <div class="reason-card-inner">
+        <div class="reason-front">
+          <span class="reason-icon">🦋</span>
+          <h3>Your Kindness</h3>
+          <p>Your gentle, loving heart inspires me to be a better person every single day.</p>
+          <span class="reason-tap-hint">TAP TO FLIP ✨</span>
+        </div>
+        <div class="reason-back">
+          <div class="reason-back-img">💝</div>
+          <div class="reason-back-label">Your heart is pure gold 🦋</div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -944,6 +1109,34 @@ section { position: relative; overflow: hidden; }
 </section>
 
 <!-- ==============================
+     SECTION: I LOVE YOU HEART
+     ============================== -->
+<section id="love-heart-sec">
+  <!-- Floating rising hearts -->
+  <div id="lhFloatContainer"></div>
+  <!-- Decorative scattered small hearts -->
+  <span class="lh-deco-heart" style="left:5%;top:18%;font-size:11px;animation-duration:3.2s;animation-delay:0s;">🩷</span>
+  <span class="lh-deco-heart" style="left:12%;top:55%;font-size:15px;animation-duration:4s;animation-delay:.5s;">💗</span>
+  <span class="lh-deco-heart" style="left:20%;top:30%;font-size:9px;animation-duration:2.8s;animation-delay:1s;">❤️</span>
+  <span class="lh-deco-heart" style="left:7%;top:75%;font-size:13px;animation-duration:3.6s;animation-delay:.2s;">💕</span>
+  <span class="lh-deco-heart" style="right:6%;top:22%;font-size:12px;animation-duration:3s;animation-delay:.8s;">🩷</span>
+  <span class="lh-deco-heart" style="right:14%;top:60%;font-size:16px;animation-duration:4.2s;animation-delay:.3s;">💗</span>
+  <span class="lh-deco-heart" style="right:22%;top:38%;font-size:9px;animation-duration:2.6s;animation-delay:1.2s;">💖</span>
+  <span class="lh-deco-heart" style="right:8%;top:80%;font-size:11px;animation-duration:3.8s;animation-delay:.6s;">❤️</span>
+  <span class="lh-deco-heart" style="left:35%;top:8%;font-size:10px;animation-duration:3.4s;animation-delay:.9s;">💕</span>
+  <span class="lh-deco-heart" style="right:30%;top:12%;font-size:13px;animation-duration:3.1s;animation-delay:.4s;">🩷</span>
+  <span class="lh-deco-heart" style="left:48%;top:85%;font-size:10px;animation-duration:2.9s;animation-delay:1.4s;">💗</span>
+
+  <div class="section-label">Always &amp; Forever</div>
+  <h2 class="section-title" data-aos="fade-up">I Love You 💗</h2>
+  <div class="section-divider"></div>
+
+  <div class="love-heart-canvas-wrap" data-aos="zoom-in" data-aos-delay="200">
+    <canvas id="loveHeartCanvas" width="580" height="580"></canvas>
+  </div>
+</section>
+
+<!-- ==============================
      SECTION 8: VIDEO
      ============================== -->
 <section id="video-sec">
@@ -984,6 +1177,7 @@ window.addEventListener('load', () => {
     document.getElementById('loader').classList.add('hidden');
     startTypewriter();
     makeParticles('welcomeParticles', 18);
+    startCountdown(); // start immediately so countdown is always live
   }, 2400);
 });
 
@@ -1051,7 +1245,7 @@ function goToLogin(){
 }
 
 // ==================== LOGIN CHECK ====================
-const SECRET_ANSWER = 'bata'; // Change this to your girlfriend's name (lowercase)
+const SECRET_ANSWER = 'mano'; // Nickname
 function checkLogin(){
   const val=document.getElementById('loginInput').value.trim().toLowerCase();
   const err=document.getElementById('loginError');
@@ -1170,31 +1364,29 @@ function typeLetterText(){
 
 // ==================== COUNTDOWN ====================
 function startCountdown(){
-  // Set next birthday — change month (0-indexed) and day
-  function getNextBirthday(){
-    const now=new Date();
-    const thisYear=new Date(now.getFullYear(),5,15); // June 15 — change here
-    if(now>thisYear){ thisYear.setFullYear(now.getFullYear()+1); }
-    return thisYear;
-  }
+  // Target: June 17, 2026 — using explicit constructor to avoid timezone issues
+  const target = new Date(2026, 5, 17, 0, 0, 0); // month is 0-indexed: 5 = June
   function update(){
-    const diff=getNextBirthday()-new Date();
+    const now = new Date();
+    const diff = target - now;
     if(diff<=0){
       document.getElementById('cd-days').textContent='🎂';
       document.getElementById('cd-hours').textContent='00';
       document.getElementById('cd-mins').textContent='00';
       document.getElementById('cd-secs').textContent='00';
+      clearInterval(timer);
       return;
     }
     const d=Math.floor(diff/86400000);
     const h=Math.floor((diff%86400000)/3600000);
     const m=Math.floor((diff%3600000)/60000);
     const s=Math.floor((diff%60000)/1000);
-    const set=(id,v)=>{ const el=document.getElementById(id);const str=String(v).padStart(2,'0');if(el.textContent!==str){el.style.transform='scale(1.25)';el.textContent=str;setTimeout(()=>el.style.transform='',200);} };
-    set('cd-days',String(d).padStart(3,'0'));
+    const set=(id,v)=>{ const el=document.getElementById(id); if(!el) return; const str=String(v).padStart(2,'0'); if(el.textContent!==str){el.style.transform='scale(1.25)';el.textContent=str;setTimeout(()=>el.style.transform='',200);} };
+    document.getElementById('cd-days').textContent=String(d).padStart(3,'0');
     set('cd-hours',h); set('cd-mins',m); set('cd-secs',s);
   }
-  update(); setInterval(update,1000);
+  update();
+  const timer = setInterval(update,1000);
 }
 
 // ==================== SWIPER ====================
@@ -1288,7 +1480,147 @@ function updateNavDots(){
   document.querySelectorAll('section').forEach(s=>observer.observe(s));
 }
 
-// ==================== FLOATING HEARTS (welcome) ====================
+// ==================== I LOVE YOU HEART ANIMATION ====================
+(function(){
+  const canvas = document.getElementById('loveHeartCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const cx = W / 2, cy = H / 2 + 10;
+  const text = 'I love you  ';
+  const R = 110; // radius of text path
+
+  // Build array of character positions along the heart path
+  // Heart parametric: x = 16sin^3(t), y = -(13cos(t)-5cos(2t)-2cos(3t)-cos(4t))
+  // Normalized to canvas size
+  function heartPoint(t) {
+    const scale = 17.5;
+    const x = cx + scale * 16 * Math.pow(Math.sin(t), 3);
+    const y = cy - scale * (13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+    return { x, y };
+  }
+
+  // Sample many points along the heart to get arc lengths
+  const SAMPLES = 600;
+  const points = [];
+  for (let i = 0; i <= SAMPLES; i++) {
+    const t = (i / SAMPLES) * Math.PI * 2;
+    points.push(heartPoint(t));
+  }
+
+  // Compute cumulative arc length
+  const arcLens = [0];
+  for (let i = 1; i < points.length; i++) {
+    const dx = points[i].x - points[i-1].x;
+    const dy = points[i].y - points[i-1].y;
+    arcLens.push(arcLens[arcLens.length-1] + Math.sqrt(dx*dx + dy*dy));
+  }
+  const totalLen = arcLens[arcLens.length - 1];
+
+  // Get a point and tangent at a given arc-length fraction [0,1]
+  function getAtFraction(frac) {
+    const target = ((frac % 1) + 1) % 1 * totalLen;
+    let lo = 0, hi = arcLens.length - 1;
+    while (lo < hi - 1) {
+      const mid = (lo + hi) >> 1;
+      if (arcLens[mid] < target) lo = mid; else hi = mid;
+    }
+    const t = (target - arcLens[lo]) / (arcLens[hi] - arcLens[lo]);
+    const p = points[lo];
+    const q = points[hi];
+    const x = p.x + (q.x - p.x) * t;
+    const y = p.y + (q.y - p.y) * t;
+    const ang = Math.atan2(q.y - p.y, q.x - p.x);
+    return { x, y, ang };
+  }
+
+  // Number of text repetitions orbiting
+  const NUM_COPIES = 4;
+  let offset = 0;    // current arc-fraction offset (0..1)
+  const SPEED = 0.0008; // fraction per frame
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    for (let copy = 0; copy < NUM_COPIES; copy++) {
+      const copyOffset = offset + copy / NUM_COPIES;
+
+      // Draw each character of the repeating text string
+      const charCount = 20; // chars visible per copy
+      for (let ci = 0; ci < charCount; ci++) {
+        const frac = copyOffset + ci / (NUM_COPIES * charCount);
+        const pos = getAtFraction(frac);
+        const ch = text[ci % text.length];
+
+        // Fade: brightest at front, dimmer further behind
+        const brightness = 1 - (ci / charCount) * 0.75;
+        const alpha = brightness;
+
+        ctx.save();
+        ctx.translate(pos.x, pos.y);
+        ctx.rotate(pos.ang + Math.PI / 2);
+        ctx.font = `900 ${13 + brightness * 5}px 'Lato', sans-serif`;
+        ctx.fillStyle = `rgba(240, 100, 170, ${alpha})`;
+        ctx.shadowColor = `rgba(233,30,140,${alpha * 0.8})`;
+        ctx.shadowBlur = 6 * brightness;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(ch, 0, 0);
+        ctx.restore();
+      }
+    }
+
+    offset = (offset + SPEED) % 1;
+    requestAnimationFrame(draw);
+  }
+
+  // Start once the section is in view
+  const observer = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
+      draw();
+      observer.disconnect();
+    }
+  }, { threshold: 0.3 });
+  observer.observe(canvas);
+})();
+
+// ==================== LOVE HEART SECTION — RISING HEARTS ====================
+(function(){
+  const emojis = ['💗','💕','🩷','💖','❤️','💓'];
+  const container = document.getElementById('lhFloatContainer');
+  if (!container) return;
+
+  function spawnHeart() {
+    const h = document.createElement('span');
+    h.className = 'lh-float-heart';
+    const size = 10 + Math.random() * 14;
+    const dur = 5 + Math.random() * 5;
+    h.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    h.style.cssText = `
+      left: ${5 + Math.random() * 90}%;
+      font-size: ${size}px;
+      animation-duration: ${dur}s;
+      animation-delay: 0s;
+    `;
+    container.appendChild(h);
+    setTimeout(() => h.remove(), (dur + 0.5) * 1000);
+  }
+
+  const sec = document.getElementById('love-heart-sec');
+  let interval = null;
+  const obs = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
+      if (!interval) {
+        for (let i = 0; i < 5; i++) setTimeout(spawnHeart, i * 300);
+        interval = setInterval(spawnHeart, 650);
+      }
+    } else {
+      if (interval) { clearInterval(interval); interval = null; }
+    }
+  }, { threshold: 0.1 });
+  if (sec) obs.observe(sec);
+})();
+
 setInterval(()=>{
   if(!document.getElementById('welcome').style.display){
     const h=document.createElement('div');
